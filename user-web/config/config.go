@@ -3,5 +3,9 @@ package config
 type UserSrvConfig struct {
 	Host string `mapstructure:"host" json:"host"`
 	Port int    `mapstructure:"port" json:"port"`
-	Name string `mapstructure:"name" json:"name"`
+}
+
+type ServerConfig struct {
+	Name          string        `mapstructure:"name" json:"name"`
+	UserSrvConfig UserSrvConfig `mapstructure:"user_srv" json:"user_srv"`
 }

@@ -10,9 +10,11 @@ import (
 func main() {
 	// 1.初始化日志 logger
 	initialize.InitLogger()
-	// 2.初始化路由 router
+	// 2. 初始化配置文件
+	initialize.InitConfig()
+	// 3.初始化路由 router
 	Router := initialize.InitRouter()
-	// 3.初始化翻译器（对gin框架响应的中文内容）
+	// 4.初始化翻译器（对gin框架响应的中文内容）
 	if err := initialize.InitTranslation("zh"); err != nil {
 		panic(err)
 	}
