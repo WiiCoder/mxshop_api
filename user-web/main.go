@@ -6,6 +6,13 @@ import (
 	"mxshop_api/user-web/global"
 	"mxshop_api/user-web/initialize"
 
+	ut "github.com/go-playground/universal-translator"
+
+	myValidator "mxshop_api/user-web/validator"
+
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
+
 	"go.uber.org/zap"
 )
 
@@ -27,6 +34,17 @@ func main() {
 	}
 	// 5.初始化服务连接
 	initialize.InitSrvConn()
+
+	// 注册验证器
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		_ = v.RegisterValidation("mobile", myValidator.ValidateMobile)
+		_ = v.RegisterTranslation("mobile", global.Translator, func(ut ut.Translator) error {
+			return ut.Add("mobile", "{0} 非法的手机号码！", true)
+		}, func(ut ut.Translator, fe validator.FieldError) string {
+			t, _ := ut.T("mobile", fe.Field())
+			return t
+		})
+	}
 	/*
 		1. S()可以获取一个全局的sugar，可以让我们自己设置一个全局的logger
 		2. 日志是分级别的，debug， info ， warn， error， fetal
