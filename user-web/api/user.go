@@ -1,16 +1,15 @@
 package api
 
 import (
-	"fmt"
+	"mxshop_api/user-web/global"
 	"mxshop_api/user-web/global/response"
 	"mxshop_api/user-web/proto"
 	"net/http"
+	"strconv"
 	"time"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	"google.golang.org/grpc"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -47,19 +46,13 @@ func HandleGrpcErrorToHttp(err error, c *gin.Context) {
 }
 
 func GetUserList(ctx *gin.Context) {
-	ip := "0.0.0.0"
-	port := 50051
-	userConn, err := grpc.Dial(fmt.Sprintf("%s:%d", ip, port), grpc.WithInsecure())
-	if err != nil {
-		zap.S().Errorw("[GRPC Server] 连接【用户服务】失败")
-		return
-	}
-
-	UserSrvClient := proto.NewUserClient(userConn)
-
-	userListResponse, err := UserSrvClient.GetUserList(ctx, &proto.PageInfo{
-		PageNum:  1,
-		PageSize: 1,
+	pageNum := ctx.DefaultQuery("pn", "0")
+	pageInt, _ := strconv.Atoi(pageNum)
+	pageSize := ctx.DefaultQuery("ps", "10")
+	sizeInt, _ := strconv.Atoi(pageSize)
+	userListResponse, err := global.UserSrvClient.GetUserList(ctx, &proto.PageInfo{
+		PageNum:  uint32(pageInt),
+		PageSize: uint32(sizeInt),
 	})
 
 	if err != nil {
