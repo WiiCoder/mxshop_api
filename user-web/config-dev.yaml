@@ -2,5 +2,12 @@ name: 'user-web'
 host: '127.0.0.1'
 port: 8081
 user_srv:
+  name: 'user_srv'
   host: '127.0.0.1'
   port: 50051
+redis:
+  host: '127.0.0.1'
+  port: 65533
+consul:
+  host: '127.0.0.1'
+  port: 8500
