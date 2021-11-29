@@ -8,10 +8,25 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/hashicorp/consul/api"
+	_ "github.com/mbobakov/grpc-consul-resolver"
 	"go.uber.org/zap"
 )
 
 func InitSrvConn() {
+	consulInfo := global.ServerConfig.ConsulConfig
+	userConn, err := grpc.Dial(fmt.Sprintf("consul://%s:%d/%s?wait=15s",
+		consulInfo.Host, consulInfo.Port, global.ServerConfig.UserSrvConfig.Name),
+		grpc.WithInsecure(),
+		grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy": "round_robin"}`))
+	if err != nil {
+		zap.S().Errorw("[GRPC Server] 连接【用户服务】失败")
+		return
+	}
+	UserSrvClient := proto.NewUserClient(userConn)
+	global.UserSrvClient = UserSrvClient
+}
+
+func InitSrvConn2() {
 	// 1. 直连方式
 	//ip := global.ServerConfig.UserSrvConfig.Host
 	//port := global.ServerConfig.UserSrvConfig.Port
